@@ -20,7 +20,7 @@ ChatBot::ChatBot()
 // constructor WITH memory allocation
 ChatBot::ChatBot(std::string filename)
 {
-    std::cout << "ChatBot Constructor" << std::endl;
+    std::cout << "ChatBot Constructor " << std::endl;
     
     // invalidate data handles
     _chatLogic = nullptr;
@@ -32,21 +32,129 @@ ChatBot::ChatBot(std::string filename)
 
 ChatBot::~ChatBot()
 {
-    std::cout << "ChatBot Destructor" << std::endl;
+    std::cout << "ChatBot Destructor " << std::endl;
 
     // deallocate heap memory
-    if(_image != NULL) // Attention: wxWidgets used NULL and not nullptr
+    if(_image) // Attention: wxWidgets used NULL and not nullptr
     {
         delete _image;
-        _image = NULL;
+        _image = nullptr;
     }
 }
 
-//// STUDENT CODE
-////
+//----------------------------------------------------
+//             Task 2, copy constructor
+//----------------------------------------------------
+ChatBot::ChatBot(const ChatBot &other)
+{
+    std::cout << "ChatBot Copy Constructor " << &other 
+              << " to " << this << std::endl;
+    
+    if (_image != nullptr)
+        delete _image;
+    if (_currentNode != nullptr)
+        delete _currentNode;
+    if (_rootNode != nullptr)
+        delete _rootNode;
+    if (_chatLogic != nullptr)
+        delete _chatLogic;
+    
+    _image  = new wxBitmap();
+    *_image = *other._image;
 
-////
-//// EOF STUDENT CODE
+    _currentNode = new GraphNode(0);        
+    _rootNode    = new GraphNode(0);    
+    _chatLogic   = new ChatLogic();
+
+    _currentNode= other._currentNode;
+    _rootNode   = other._rootNode;
+    _chatLogic  = other._chatLogic;
+
+    _chatLogic->SetChatbotHandle(this);
+}
+
+//----------------------------------------------------
+//          Task 2, copy assignment operator
+//----------------------------------------------------
+ChatBot& ChatBot::operator=(const ChatBot &other)
+{
+    std::cout << "ChatBot Copy Assignment Operator " 
+              << &other << " to " << this << std::endl;
+
+    if (this == &other)
+        return *this;
+
+    if (_image != nullptr)
+        delete _image;
+    if (_currentNode != nullptr)
+        delete _currentNode;
+    if (_rootNode != nullptr)
+        delete _rootNode;
+    if (_chatLogic != nullptr)
+        delete _chatLogic;
+    
+    _image  = new wxBitmap();
+    *_image = *other._image;
+
+    _currentNode = new GraphNode(0);        
+    _rootNode    = new GraphNode(0);    
+    _chatLogic   = new ChatLogic();
+
+    _currentNode = other._currentNode;
+    _rootNode    = other._rootNode;
+    _chatLogic   = other._chatLogic;
+
+    _chatLogic->SetChatbotHandle(this);
+
+    return *this;
+}
+
+//----------------------------------------------------
+//              Task 2, move constructor
+//----------------------------------------------------
+ChatBot::ChatBot(ChatBot&& other)
+{
+    std::cout << "ChatBot Move Constructor " 
+              << &other << " to " << this << std::endl;
+    
+    _image       = other._image;
+    _currentNode = other._currentNode;
+    _rootNode    = other._rootNode;
+    _chatLogic   = other._chatLogic;
+
+    _chatLogic->SetChatbotHandle(this);
+
+    other._image       = nullptr;
+    other._currentNode = nullptr;
+    other._chatLogic   = nullptr;
+    other._rootNode    = nullptr;
+}
+
+//----------------------------------------------------
+//          Task 2, move assignment operator
+//----------------------------------------------------
+ChatBot& ChatBot::operator=(ChatBot &&other)
+{
+    std::cout << "ChatBot Move Assignment Operator " 
+              << &other << " to " << this << std::endl;
+
+    if (this == &other)
+        return *this;
+
+    _image       = other._image;
+    _currentNode = other._currentNode;
+    _rootNode    = other._rootNode;
+    _chatLogic   = other._chatLogic;
+
+    _chatLogic->SetChatbotHandle(this);
+
+    other._image       = nullptr;
+    other._currentNode = nullptr;
+    other._chatLogic   = nullptr;
+    other._rootNode    = nullptr;
+
+    return *this;
+}
 
 void ChatBot::ReceiveMessageFromUser(std::string message)
 {
